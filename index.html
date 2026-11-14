@@ -16,7 +16,9 @@
       <button class="nav-btn" data-tab="today">📊 Hari Ini</button>
       <button class="nav-btn" data-tab="target">🎯 Targetku</button>
       <button class="nav-btn" data-tab="tips">💡 Tips Sehat</button>
+      <button class="nav-btn" data-tab="baca">📖 Bacaan</button>
     </div>
+    <button class="voice-toggle" id="voiceToggle">🔊 Suara: ON</button>
   </nav>
 
   <main class="main">
@@ -55,6 +57,10 @@
     <section class="tab-content" id="tab-today">
       <h2>📊 Ringkasan Hari Ini</h2>
       <p class="subtitle">Lihat total gizi & skor kesehatan makananmu</p>
+
+      <div class="speak-row">
+        <button class="speak-btn" id="speakAnalysis">🔊 Bacakan Analisis</button>
+      </div>
 
       <div class="score-card" id="scoreCard">
         <p class="placeholder">Belum ada makanan dicatat hari ini. Yuk catat dulu di tab 🍽️!</p>
@@ -113,33 +119,51 @@
     <!-- TAB 4: TIPS -->
     <section class="tab-content" id="tab-tips">
       <h2>💡 Tips Sehat untuk Pelajar</h2>
-      <p class="subtitle">Saran dari NutriMate biar pola makanmu makin baik</p>
+      <p class="subtitle">Klik 🔊 untuk dengar tipsnya!</p>
 
       <div class="tips-list">
         <div class="tip-card">
+          <button class="tip-speak" data-tip="Sarapan itu penting. Sarapan bikin kamu fokus belajar. Coba telur, roti, dan susu. Cepat, murah, bergizi!">🔊</button>
           <h3>🍳 Sarapan Itu Penting</h3>
           <p>Sarapan bikin kamu fokus belajar. Coba telur + roti + susu. Cepat, murah, bergizi!</p>
         </div>
         <div class="tip-card">
+          <button class="tip-speak" data-tip="Isi piringku. Setengah piring sayur dan buah, seperempat protein, seperempat karbohidrat.">🔊</button>
           <h3>🥗 Isi Piringku</h3>
           <p>Setengah piring sayur & buah, seperempat protein (telur/ayam/ikan), seperempat karbohidrat (nasi).</p>
         </div>
         <div class="tip-card">
+          <button class="tip-speak" data-tip="Minum 8 gelas air sehari. Dehidrasi bikin ngantuk dan susah fokus. Bawa botol air ke sekolah!">🔊</button>
           <h3>💧 Minum 8 Gelas Air</h3>
           <p>Dehidrasi bikin ngantuk & susah fokus. Bawa botol air ke sekolah!</p>
         </div>
         <div class="tip-card">
+          <button class="tip-speak" data-tip="Snack cerdas. Ganti gorengan dengan buah, kacang, atau yogurt. Enak dan lebih sehat.">🔊</button>
           <h3>🍿 Snack Cerdas</h3>
           <p>Ganti gorengan dengan buah, kacang, atau yogurt. Enak & lebih sehat.</p>
         </div>
         <div class="tip-card">
+          <button class="tip-speak" data-tip="Kurangi gula. Es teh manis satu gelas sama dengan lima sendok gula. Coba minta less sugar ya!">🔊</button>
           <h3>🚫 Kurangi Gula</h3>
           <p>Es teh manis 1 gelas = 5 sendok gula. Coba minta "less sugar" ya!</p>
         </div>
         <div class="tip-card">
+          <button class="tip-speak" data-tip="Makan teratur. Tiga makan utama dan dua snack sehat. Jangan skip makan biar tidak lemas.">🔊</button>
           <h3>⏰ Makan Teratur</h3>
           <p>3 makan utama + 2 snack sehat. Jangan skip makan biar gak lemas.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: BACAAN (BARU) -->
+    <section class="tab-content" id="tab-baca">
+      <h2>📖 Bacaan Gizi untuk Pelajar</h2>
+      <p class="subtitle">Klik artikel untuk baca, atau klik 🔊 untuk dibacakan</p>
+
+      <div class="article-list" id="articleList"></div>
+
+      <div class="article-reader" id="articleReader">
+        <p class="placeholder">Pilih artikel di atas untuk mulai baca 📖</p>
       </div>
     </section>
 
