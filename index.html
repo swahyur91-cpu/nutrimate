@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriMate — Asisten Gizi Pelajar 🍎</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">🍎 NutriMate</div>
+    <div class="nav-tabs">
+      <button class="nav-btn active" data-tab="log">🍽️ Catat Makan</button>
+      <button class="nav-btn" data-tab="today">📊 Hari Ini</button>
+      <button class="nav-btn" data-tab="target">🎯 Targetku</button>
+      <button class="nav-btn" data-tab="tips">💡 Tips Sehat</button>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- TAB 1: CATAT MAKAN -->
+    <section class="tab-content active" id="tab-log">
+      <h2>🍽️ Makan Apa Hari Ini?</h2>
+      <p class="subtitle">Ketik makanan yang kamu makan, NutriMate hitung gizinya!</p>
+
+      <div class="search-box">
+        <input type="text" id="foodInput" placeholder="Contoh: nasi goreng, telur, es teh..." autocomplete="off">
+        <button id="searchBtn">🔍 Cari</button>
+      </div>
+
+      <div class="suggestions" id="suggestions"></div>
+
+      <div class="meal-type">
+        <label>Waktu makan:</label>
+        <button class="meal-chip active" data-meal="pagi">🌅 Pagi</button>
+        <button class="meal-chip" data-meal="siang">☀️ Siang</button>
+        <button class="meal-chip" data-meal="malam">🌙 Malam</button>
+        <button class="meal-chip" data-meal="snack">🍿 Snack</button>
+      </div>
+
+      <div class="selected-foods" id="selectedFoods">
+        <p class="placeholder">Belum ada makanan dipilih. Ketik & klik dari saran di atas 👆</p>
+      </div>
+
+      <div class="log-actions">
+        <span class="total-preview" id="totalPreview">Total: 0 kalori</span>
+        <button class="save-btn" id="saveMeal">💾 Simpan Makan</button>
+      </div>
+    </section>
+
+    <!-- TAB 2: HARI INI -->
+    <section class="tab-content" id="tab-today">
+      <h2>📊 Ringkasan Hari Ini</h2>
+      <p class="subtitle">Lihat total gizi & skor kesehatan makananmu</p>
+
+      <div class="score-card" id="scoreCard">
+        <p class="placeholder">Belum ada makanan dicatat hari ini. Yuk catat dulu di tab 🍽️!</p>
+      </div>
+
+      <div class="nutrition-grid" id="nutritionGrid"></div>
+
+      <div class="meal-list" id="mealList"></div>
+
+      <div class="analysis-box" id="analysisBox"></div>
+    </section>
+
+    <!-- TAB 3: TARGET -->
+    <section class="tab-content" id="tab-target">
+      <h2>🎯 Target Kalori Harianmu</h2>
+      <p class="subtitle">Isi data dirimu, NutriMate hitung kebutuhan kalori</p>
+
+      <div class="form-group">
+        <label>Berat badan (kg)</label>
+        <input type="number" id="weight" placeholder="Contoh: 50" min="20" max="200">
+      </div>
+
+      <div class="form-group">
+        <label>Tinggi badan (cm)</label>
+        <input type="number" id="height" placeholder="Contoh: 160" min="100" max="250">
+      </div>
+
+      <div class="form-group">
+        <label>Umur (tahun)</label>
+        <input type="number" id="age" placeholder="Contoh: 16" min="10" max="60">
+      </div>
+
+      <div class="form-group">
+        <label>Jenis kelamin</label>
+        <select id="gender">
+          <option value="male">Laki-laki</option>
+          <option value="female">Perempuan</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Aktivitas</label>
+        <select id="activity">
+          <option value="1.2">Jarang olahraga (duduk terus)</option>
+          <option value="1.375">Olahraga ringan (1-3x/minggu)</option>
+          <option value="1.55" selected>Olahraga sedang (3-5x/minggu)</option>
+          <option value="1.725">Olahraga berat (6-7x/minggu)</option>
+        </select>
+      </div>
+
+      <button class="save-btn" id="calcTarget">🎯 Hitung Target Kalori</button>
+
+      <div class="target-result" id="targetResult"></div>
+    </section>
+
+    <!-- TAB 4: TIPS -->
+    <section class="tab-content" id="tab-tips">
+      <h2>💡 Tips Sehat untuk Pelajar</h2>
+      <p class="subtitle">Saran dari NutriMate biar pola makanmu makin baik</p>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <h3>🍳 Sarapan Itu Penting</h3>
+          <p>Sarapan bikin kamu fokus belajar. Coba telur + roti + susu. Cepat, murah, bergizi!</p>
+        </div>
+        <div class="tip-card">
+          <h3>🥗 Isi Piringku</h3>
+          <p>Setengah piring sayur & buah, seperempat protein (telur/ayam/ikan), seperempat karbohidrat (nasi).</p>
+        </div>
+        <div class="tip-card">
+          <h3>💧 Minum 8 Gelas Air</h3>
+          <p>Dehidrasi bikin ngantuk & susah fokus. Bawa botol air ke sekolah!</p>
+        </div>
+        <div class="tip-card">
+          <h3>🍿 Snack Cerdas</h3>
+          <p>Ganti gorengan dengan buah, kacang, atau yogurt. Enak & lebih sehat.</p>
+        </div>
+        <div class="tip-card">
+          <h3>🚫 Kurangi Gula</h3>
+          <p>Es teh manis 1 gelas = 5 sendok gula. Coba minta "less sugar" ya!</p>
+        </div>
+        <div class="tip-card">
+          <h3>⏰ Makan Teratur</h3>
+          <p>3 makan utama + 2 snack sehat. Jangan skip makan biar gak lemas.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL SARAN -->
+  <div class="modal" id="suggestionModal">
+    <div class="modal-box">
+      <h3 id="modalTitle">Saran NutriMate</h3>
+      <p id="modalText"></p>
+      <button id="modalClose">Oke, ngerti! 👍</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
