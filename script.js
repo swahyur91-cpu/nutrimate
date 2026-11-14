@@ -1,10 +1,15 @@
 // ============================================================
-// NUTRIMATE — Asisten Gizi Pelajar
+// NUTRIMATE — Asisten Gizi Pelajar + SUARA + BACAAN
 // ============================================================
 
-// ===== DATABASE MAKANAN (per 100g / per porsi standar) =====
+// ===== STATE =====
+let selectedFoods = [];
+let currentMealType = "pagi";
+let voiceEnabled = true;
+let lastAnalysisText = "";
+
+// ===== DATABASE MAKANAN =====
 const foodDB = [
-  // Karbohidrat
   { name: "nasi putih", aliases: ["nasi", "rice"], cal: 180, protein: 4, carbs: 40, fat: 0.4, healthy: 5, category: "karbo" },
   { name: "nasi goreng", aliases: ["nasgor"], cal: 350, protein: 8, carbs: 45, fat: 15, healthy: 2, category: "karbo" },
   { name: "mie goreng", aliases: ["mie", "indomie"], cal: 380, protein: 8, carbs: 50, fat: 16, healthy: 2, category: "karbo" },
@@ -17,8 +22,6 @@ const foodDB = [
   { name: "bakso", aliases: [], cal: 320, protein: 14, carbs: 40, fat: 12, healthy: 3, category: "karbo" },
   { name: "soto ayam", aliases: ["soto"], cal: 300, protein: 18, carbs: 30, fat: 12, healthy: 6, category: "karbo" },
   { name: "nasi padang", aliases: ["padang"], cal: 650, protein: 25, carbs: 70, fat: 28, healthy: 3, category: "karbo" },
-
-  // Protein
   { name: "telur", aliases: ["egg", "telur rebus", "telur goreng"], cal: 78, protein: 6, carbs: 0.6, fat: 5, healthy: 8, category: "protein" },
   { name: "ayam goreng", aliases: ["ayam"], cal: 250, protein: 25, carbs: 5, fat: 15, healthy: 4, category: "protein" },
   { name: "ayam bakar", aliases: [], cal: 200, protein: 28, carbs: 3, fat: 8, healthy: 7, category: "protein" },
@@ -28,8 +31,6 @@ const foodDB = [
   { name: "daging sapi", aliases: ["daging", "sapi"], cal: 250, protein: 26, carbs: 0, fat: 16, healthy: 5, category: "protein" },
   { name: "susu", aliases: ["susu sapi", "milk"], cal: 120, protein: 8, carbs: 12, fat: 5, healthy: 8, category: "protein" },
   { name: "yogurt", aliases: [], cal: 100, protein: 5, carbs: 12, fat: 4, healthy: 9, category: "protein" },
-
-  // Sayur & Buah
   { name: "bayam", aliases: ["sayur bayam"], cal: 25, protein: 3, carbs: 4, fat: 0.4, healthy: 10, category: "sayur" },
   { name: "brokoli", aliases: [], cal: 35, protein: 3, carbs: 7, fat: 0.4, healthy: 10, category: "sayur" },
   { name: "wortel", aliases: [], cal: 40, protein: 1, carbs: 10, fat: 0.2, healthy: 10, category: "sayur" },
@@ -41,16 +42,12 @@ const foodDB = [
   { name: "mangga", aliases: [], cal: 99, protein: 1, carbs: 25, fat: 0.6, healthy: 8, category: "buah" },
   { name: "semangka", aliases: [], cal: 46, protein: 1, carbs: 12, fat: 0.2, healthy: 9, category: "buah" },
   { name: "alpukat", aliases: [], cal: 160, protein: 2, carbs: 9, fat: 15, healthy: 8, category: "buah" },
-
-  // Minuman
   { name: "es teh manis", aliases: ["es teh", "teh manis"], cal: 110, protein: 0, carbs: 28, fat: 0, healthy: 2, category: "minuman" },
   { name: "teh tanpa gula", aliases: ["teh"], cal: 2, protein: 0, carbs: 0.5, fat: 0, healthy: 9, category: "minuman" },
   { name: "air putih", aliases: ["air"], cal: 0, protein: 0, carbs: 0, fat: 0, healthy: 10, category: "minuman" },
   { name: "kopi susu", aliases: ["kopi", "latte"], cal: 150, protein: 4, carbs: 20, fat: 6, healthy: 4, category: "minuman" },
   { name: "jus jeruk", aliases: ["jus"], cal: 110, protein: 1, carbs: 26, fat: 0.4, healthy: 7, category: "minuman" },
   { name: "soda", aliases: ["coca cola", "cola", "coke"], cal: 140, protein: 0, carbs: 39, fat: 0, healthy: 1, category: "minuman" },
-
-  // Snack & Junk
   { name: "gorengan", aliases: ["bakwan", "tahu goreng", "pisang goreng"], cal: 200, protein: 3, carbs: 20, fat: 12, healthy: 2, category: "snack" },
   { name: "keripik", aliases: ["chips", "keripik kentang"], cal: 160, protein: 2, carbs: 15, fat: 10, healthy: 2, category: "snack" },
   { name: "cokelat", aliases: ["chocolate"], cal: 150, protein: 2, carbs: 17, fat: 9, healthy: 4, category: "snack" },
@@ -59,9 +56,129 @@ const foodDB = [
   { name: "kacang", aliases: ["kacang almond", "kacang tanah"], cal: 170, protein: 6, carbs: 6, fat: 14, healthy: 8, category: "snack" },
 ];
 
-// ===== STATE =====
-let selectedFoods = [];
-let currentMealType = "pagi";
+// ===== DATABASE ARTIKEL BACAAN =====
+const articles = [
+  {
+    id: "gizi-dasar",
+    title: "Apa Itu Gizi Seimbang?",
+    summary: "Kenalan sama 5 kelompok makanan",
+    content: [
+      "Gizi seimbang artinya makanan yang kita makan mengandung semua zat gizi yang dibutuhkan tubuh, dalam jumlah yang tepat.",
+      "Ada 5 kelompok makanan penting: karbohidrat (nasi, roti, ubi), protein (telur, ayam, ikan, tempe), sayur, buah, dan air putih.",
+      "Kementerian Kesehatan punya panduan 'Isi Piringku': setengah piring berisi sayur dan buah, seperempat protein, seperempat karbohidrat.",
+      "Jadi, bukan berarti harus mahal. Nasi + tempe + sayur bayam + jeruk sudah gizi seimbang, lho!",
+    ],
+  },
+  {
+    id: "sarapan",
+    title: "Kenapa Sarapan Penting?",
+    summary: "Bikin fokus belajar seharian",
+    content: [
+      "Sarapan adalah waktu makan paling penting. Setelah tidur 7-8 jam, tubuh butuh energi untuk mulai aktivitas.",
+      "Penelitian menunjukkan pelajar yang sarapan punya konsentrasi lebih baik dan nilai akademis lebih tinggi.",
+      "Sarapan tidak perlu mahal. Telur + roti + susu sudah cukup. Atau nasi + telur + sayur sisa kemarin.",
+      "Hindari sarapan gorengan + es teh manis setiap hari. Itu tinggi lemak dan gula, rendah protein.",
+    ],
+  },
+  {
+    id: "protein",
+    title: "Protein untuk Pelajar",
+    summary: "Zat pembangun tubuh & otak",
+    content: [
+      "Protein adalah zat gizi yang membantu membangun otot, memperbaiki sel, dan memproduksi hormon.",
+      "Pelajar butuh sekitar 50-70 gram protein per hari, tergantung berat badan dan aktivitas.",
+      "Sumber protein murah: telur (6g per butir), tempe (10g per 100g), tahu (8g per 100g), ikan (22g per 100g).",
+      "Kekurangan protein bisa bikin lemas, susah fokus, dan luka sulit sembuh. Pastikan ada protein di setiap makan utama.",
+    ],
+  },
+  {
+    id: "gula",
+    title: "Bahaya Gula Berlebih",
+    summary: "Es teh manis tiap hari? Hati-hati",
+    content: [
+      "WHO menyarankan konsumsi gula maksimal 25 gram (6 sendok teh) per hari untuk orang dewasa.",
+      "Satu gelas es teh manis bisa mengandung 5 sendok gula. Belum termasuk snack, kue, atau minuman kemasan.",
+      "Gula berlebih bisa menyebabkan obesitas, diabetes tipe 2, dan kerusakan gigi.",
+      "Tips: minta 'less sugar' saat beli minuman, ganti soda dengan air putih, dan baca label gula di kemasan.",
+    ],
+  },
+  {
+    id: "air",
+    title: "Pentingnya Minum Air",
+    summary: "Dehidrasi bikin ngantuk di kelas",
+    content: [
+      "Tubuh manusia 60% terdiri dari air. Dehidrasi ringan saja bisa menurunkan konsentrasi hingga 20%.",
+      "Pelajar butuh 6-8 gelas air per hari, lebih banyak kalau banyak aktivitas atau cuaca panas.",
+      "Tanda dehidrasi: mulut kering, urine berwarna gelap, pusing, lemas, susah fokus.",
+      "Tips: bawa botol air ke sekolah, minum segelas sebelum berangkat, dan pasang pengingat di HP.",
+    ],
+  },
+  {
+    id: "sayur-buah",
+    title: "Sayur & Buah Setiap Hari",
+    summary: "Serat, vitamin, dan antioksidan",
+    content: [
+      "Sayur dan buah kaya serat, vitamin, mineral, dan antioksidan yang melindungi tubuh dari penyakit.",
+      "Kemenkes menganjurkan 3-5 porsi sayur dan 2-3 porsi buah per hari.",
+      "Banyak pelajar kurang makan sayur karena rasanya 'pahit' atau 'gak enak'. Coba variasikan: tumis, sup, atau jus.",
+      "Tips: isi setengah piring dengan sayur setiap makan. Tambahkan buah sebagai snack sore.",
+    ],
+  },
+  {
+    id: "junk-food",
+    title: "Mengapa Junk Food Berbahaya?",
+    summary: "Enak tapi kurang gizi",
+    content: [
+      "Junk food (makanan cepat saji, gorengan, keripik) tinggi kalori, lemak jenuh, gula, dan garam, tapi rendah serat dan vitamin.",
+      "Sesekali makan junk food tidak masalah. Tapi kalau setiap hari, bisa menyebabkan obesitas dan penyakit jantung.",
+      "Cara mengenali junk food: dikemas pabrik, tinggi garam/gula, minim serat, sering digoreng.",
+      "Solusi: batasi 1x seminggu, ganti dengan snack sehat seperti buah, kacang, atau yogurt.",
+    ],
+  },
+  {
+    id: "pola-makan",
+    title: "Pola Makan Teratur",
+    summary: "3 makan utama + 2 snack sehat",
+    content: [
+      "Tubuh butuh asupan teratur untuk menjaga gula darah stabil. Pola makan tidak teratur bisa bikin lemas dan mudah marah.",
+      "Idealnya: 3 makan utama (pagi, siang, malam) + 2 snack sehat (pagi & sore).",
+      "Jangan skip makan! Melewatkan makan bisa membuat kamu makan berlebihan di waktu berikutnya.",
+      "Jarak antar makan ideal 3-4 jam. Contoh: sarapan 7 pagi, snack 10 pagi, makan siang 12, snack 4 sore, makan malam 7 malam.",
+    ],
+  },
+];
+
+// ===== TEXT-TO-SPEECH =====
+function speak(text) {
+  if (!voiceEnabled) return;
+  if (!("speechSynthesis" in window)) return;
+
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "id-ID";
+  u.rate = 0.95;
+  u.pitch = 1.05;
+
+  const voices = window.speechSynthesis.getVoices();
+  const idVoice = voices.find((v) => v.lang === "id-ID" || v.lang.startsWith("id"));
+  if (idVoice) u.voice = idVoice;
+
+  window.speechSynthesis.speak(u);
+}
+
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
+// ===== TOGGLE SUARA =====
+const voiceToggle = document.getElementById("voiceToggle");
+
+voiceToggle.addEventListener("click", () => {
+  voiceEnabled = !voiceEnabled;
+  voiceToggle.textContent = voiceEnabled ? "🔊 Suara: ON" : "🔇 Suara: OFF";
+  voiceToggle.classList.toggle("off", !voiceEnabled);
+  if (!voiceEnabled) window.speechSynthesis.cancel();
+});
 
 // ===== NAVIGASI TAB =====
 const navButtons = document.querySelectorAll(".nav-btn");
@@ -77,7 +194,7 @@ navButtons.forEach((btn) => {
   });
 });
 
-// ===== HELPER: CARI MAKANAN =====
+// ===== HELPER =====
 function findFood(query) {
   const q = query.toLowerCase().trim();
   if (!q) return [];
@@ -102,7 +219,6 @@ function showSuggestions(query) {
   const results = findFood(query).slice(0, 6);
 
   if (results.length === 0) {
-    // Fuzzy: cari yang mengandung huruf pertama
     const fuzzy = foodDB.filter((f) => f.name.includes(query.toLowerCase().slice(0, 2))).slice(0, 4);
     if (fuzzy.length > 0) {
       fuzzy.forEach((food) => createSuggestionChip(food));
@@ -135,6 +251,7 @@ function addFood(food) {
   foodInput.value = "";
   suggestions.innerHTML = "";
   renderSelectedFoods();
+  speak(`${food.name} ditambahkan.`);
 }
 
 function renderSelectedFoods() {
@@ -199,7 +316,9 @@ document.getElementById("saveMeal").addEventListener("click", () => {
 
   localStorage.setItem("nutrimate_log", JSON.stringify(log));
 
-  showModal("✅ Berhasil Dicatat!", `${selectedFoods.length} makanan sudah masuk ke catatan "${currentMealType}". Cek di tab 📊 Hari Ini ya!`);
+  const totalCal = selectedFoods.reduce((s, f) => s + f.cal, 0);
+  showModal("✅ Berhasil Dicatat!", `${selectedFoods.length} makanan sudah masuk ke catatan "${currentMealType}". Total ${totalCal} kalori. Cek di tab 📊 Hari Ini ya!`);
+  speak(`Makan ${currentMealType} dicatat. Total ${totalCal} kalori.`);
 
   selectedFoods = [];
   renderSelectedFoods();
@@ -221,10 +340,10 @@ function renderToday() {
     nutritionGrid.innerHTML = "";
     mealList.innerHTML = "";
     analysisBox.classList.remove("show");
+    lastAnalysisText = "";
     return;
   }
 
-  // Hitung total gizi
   let totalCal = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0, totalHealthy = 0, foodCount = 0;
 
   meals.forEach((meal) => {
@@ -239,15 +358,12 @@ function renderToday() {
   });
 
   const avgHealthy = totalHealthy / foodCount;
-
-  // Skor kesehatan (0-100)
   let score = Math.min(100, Math.round(avgHealthy * 10));
   if (totalCal > 2500) score -= 15;
   if (totalCal < 800) score -= 10;
   if (totalProtein < 30) score -= 10;
   score = Math.max(0, Math.min(100, score));
 
-  // Tampilkan skor
   let scoreColor, scoreEmoji, scoreText;
   if (score >= 75) {
     scoreColor = "linear-gradient(135deg, #4caf50, #8bc34a)";
@@ -272,7 +388,6 @@ function renderToday() {
     <div class="score-text">${scoreText}</div>
   `;
 
-  // Grid gizi
   nutritionGrid.innerHTML = `
     <div class="nutrition-card">
       <div class="label">Kalori</div>
@@ -296,7 +411,6 @@ function renderToday() {
     </div>
   `;
 
-  // Daftar makan per waktu
   const mealNames = { pagi: "🌅 Sarapan", siang: "☀️ Makan Siang", malam: "🌙 Makan Malam", snack: "🍿 Snack" };
   mealList.innerHTML = "";
 
@@ -305,7 +419,6 @@ function renderToday() {
     if (typeMeals.length === 0) return;
 
     const totalTypeCal = typeMeals.reduce((sum, m) => sum + m.foods.reduce((s, f) => s + f.cal, 0), 0);
-
     let rows = "";
     typeMeals.forEach((m) => {
       m.foods.forEach((f) => {
@@ -322,10 +435,6 @@ function renderToday() {
     mealList.appendChild(section);
   });
 
-  // Analisis
-  let analysisHTML = "";
-  let analysisClass = "";
-
   const issues = [];
   if (totalCal > 2500) issues.push("kalori terlalu banyak");
   if (totalCal < 1200) issues.push("kalori terlalu sedikit");
@@ -338,20 +447,38 @@ function renderToday() {
   if (!hasSayur) issues.push("belum ada sayur");
   if (!hasBuah) issues.push("belum ada buah");
 
+  let analysisHTML = "";
+  let analysisClass = "";
+  let speakText = "";
+
   if (issues.length === 0) {
     analysisHTML = `<strong>🌟 Analisis NutriMate:</strong> Pola makanmu hari ini <b>sudah bagus</b>! Kalori, protein, karbo, dan lemak seimbang. Terus pertahankan ya! 💪`;
     analysisClass = "good";
+    speakText = `Skor kesehatanmu ${score} dari 100. Pola makanmu sudah bagus. Kalori, protein, karbohidrat, dan lemak seimbang. Terus pertahankan!`;
   } else if (issues.length <= 2) {
     analysisHTML = `<strong>💡 Analisis NutriMate:</strong> Pola makanmu <b>cukup baik</b>, tapi ada yang bisa diperbaiki: ${issues.join(", ")}. Coba tambah variasi makanan besok ya!`;
     analysisClass = "warn";
+    speakText = `Skor kesehatanmu ${score} dari 100. Pola makanmu cukup baik. Tapi masih ada yang bisa diperbaiki: ${issues.join(", ")}.`;
   } else {
     analysisHTML = `<strong>😟 Analisis NutriMate:</strong> Ada beberapa hal yang perlu diperbaiki: ${issues.join(", ")}. Jangan khawatir, besok bisa lebih baik! Coba ikuti tips di tab 💡.`;
     analysisClass = "bad";
+    speakText = `Skor kesehatanmu ${score} dari 100. Ada beberapa hal yang perlu diperbaiki: ${issues.join(", ")}. Jangan khawatir, besok bisa lebih baik!`;
   }
 
   analysisBox.className = `analysis-box show ${analysisClass}`;
   analysisBox.innerHTML = analysisHTML;
+
+  lastAnalysisText = speakText;
 }
+
+// ===== TOMBOL BACA ANALISIS =====
+document.getElementById("speakAnalysis").addEventListener("click", () => {
+  if (lastAnalysisText) {
+    speak(lastAnalysisText);
+  } else {
+    speak("Belum ada analisis. Catat makanan dulu ya!");
+  }
+});
 
 // ===== TARGET KALORI =====
 document.getElementById("calcTarget").addEventListener("click", () => {
@@ -366,7 +493,6 @@ document.getElementById("calcTarget").addEventListener("click", () => {
     return;
   }
 
-  // Rumus Mifflin-St Jeor
   let bmr;
   if (gender === "male") {
     bmr = 10 * weight + 6.25 * height - 5 * age + 5;
@@ -391,9 +517,62 @@ document.getElementById("calcTarget").addEventListener("click", () => {
     </div>
   `;
 
-  // Simpan ke localStorage
   localStorage.setItem("nutrimate_target", target.toString());
+  speak(`Target kalori harianmu ${target} kalori. Rentang sehat antara ${minCal} sampai ${maxCal} kalori.`);
 });
+
+// ===== TIPS: TOMBOL SUARA =====
+document.querySelectorAll(".tip-speak").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    speak(btn.dataset.tip);
+  });
+});
+
+// ===== ARTIKEL BACAAN =====
+const articleList = document.getElementById("articleList");
+const articleReader = document.getElementById("articleReader");
+
+function renderArticleList() {
+  articleList.innerHTML = "";
+  articles.forEach((art) => {
+    const card = document.createElement("div");
+    card.className = "article-card";
+    card.dataset.id = art.id;
+    card.innerHTML = `
+      <h4>${art.title}</h4>
+      <p>${art.summary}</p>
+    `;
+    card.addEventListener("click", () => openArticle(art.id));
+    articleList.appendChild(card);
+  });
+}
+
+function openArticle(id) {
+  const art = articles.find((a) => a.id === id);
+  if (!art) return;
+
+  document.querySelectorAll(".article-card").forEach((c) => {
+    c.classList.toggle("active", c.dataset.id === id);
+  });
+
+  const contentHTML = art.content.map((p) => `<p>${p}</p>`).join("");
+
+  articleReader.innerHTML = `
+    <h3>${art.title}</h3>
+    <div class="article-content">${contentHTML}</div>
+    <div class="reader-actions">
+      <button class="speak-btn" id="speakArticle">🔊 Bacakan Artikel</button>
+    </div>
+  `;
+
+  document.getElementById("speakArticle").addEventListener("click", () => {
+    const fullText = art.title + ". " + art.content.join(" ");
+    speak(fullText);
+  });
+
+  // Auto-scroll ke reader
+  articleReader.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 // ===== MODAL =====
 const modal = document.getElementById("suggestionModal");
@@ -414,3 +593,10 @@ modal.addEventListener("click", (e) => {
 
 // ===== INIT =====
 renderSelectedFoods();
+renderArticleList();
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    speak("Selamat datang di NutriMate. Aku siap bantu catat makananmu hari ini!");
+  }, 1200);
+});
