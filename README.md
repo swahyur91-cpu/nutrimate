@@ -34,9 +34,7 @@ Pelajar SMA (13–18 tahun) yang ingin **sadar gizi tanpa ribet** — cukup keti
 
 ### Link Website (Live)
 
-🔗 **https://[username-github].github.io/[nama-repo]/**
-
-> Ganti `[username-github]` dan `[nama-repo]` dengan data repo kamu.
+🔗 **https://swahyur91-cpu.github.io/nutrimate/**
 
 ---
 
